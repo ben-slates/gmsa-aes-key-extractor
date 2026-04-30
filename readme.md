@@ -8,11 +8,6 @@
 
 ---
 
-<!-- Brand / Logo — see brand.md -->
-<!-- <p align="center"><img src="./assets/brand.png" alt="logo" width="200"/></p> -->
-
----
-
 ## Overview
 
 `gmsa-aes-key-extractor` is a focused offensive security utility that extracts the **AES-256 Kerberos key** from a Windows **Group Managed Service Account (gMSA)** managed password blob.
@@ -84,17 +79,41 @@ Enter the salt value: DOMAIN.SOMETHINGaccountname_gMSA$
 AES256 Key: 3a1f8c9b4d2e7f0a1c5b9e3d6a2f4c8e9f1d3b7a...
 ```
 
-**Salt format** follows the standard Kerberos convention:
+---
+
+## Salt Format
+
+The Kerberos salt used for AES key derivation depends on the **account type**. Two formats apply for gMSA accounts:
+
+### Format 1 — Standard User-style gMSA (most common)
+
+Follows the standard Kerberos convention of realm + sAMAccountName:
 
 ```
 UPPERCASE.FQDN + sAMAccountName (including the $)
 ```
 
-For example — domain `corp.local`, account `svc_web_gMSA$`:
+Example — domain `corp.local`, account `svc_web_gMSA$`:
 
 ```
 CORP.LOCALsvc_web_gMSA$
 ```
+
+### Format 2 — Host-based / Service Principal gMSA
+
+For gMSA accounts configured as host-based Kerberos principals, the salt follows the host principal convention per [RFC 4120](https://www.rfc-editor.org/rfc/rfc4120):
+
+```
+UPPERCASE.FQDN + "host" + fully.qualified.account.hostname
+```
+
+Example — realm `CORP.LOCAL`, account `svc_web_gMSA` with FQDN `svc_web_gmsa.corp.local`:
+
+```
+CORP.LOCALhostsvc_web_gmsa.corp.local
+```
+
+> **Which format to use?** Try Format 1 first. If the derived key does not authenticate correctly, try Format 2. The correct format depends on how the gMSA's `servicePrincipalName` and Kerberos salt attributes are configured in Active Directory.
 
 ---
 
@@ -136,6 +155,7 @@ This tool is intended **exclusively** for:
 - [Impacket by Fortra](https://github.com/fortra/impacket)
 - [gMSA Abuse Research — cube0x0](https://cube0x0.github.io/Relaying-for-gMSA/)
 - [Kerberos AES Key Derivation — RFC 3962](https://www.rfc-editor.org/rfc/rfc3962)
+- [Kerberos Principal & Salt — RFC 4120](https://www.rfc-editor.org/rfc/rfc4120)
 
 ---
 
