@@ -34,7 +34,7 @@ pip install impacket
 ## Installation
 
 ```bash
-git clone https://github.com/yourhandle/gmsa-aes-key-extractor.git
+git clone https://github.com/ben-slates/gmsa-aes-key-extractor.git
 cd gmsa-aes-key-extractor
 pip install impacket
 ```
